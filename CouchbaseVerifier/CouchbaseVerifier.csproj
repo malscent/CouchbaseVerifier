@@ -9,6 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommandDotNet" Version="6.0.5" />
+    <PackageReference Include="CommandDotNet.IoC.MicrosoftDependencyInjection" Version="4.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

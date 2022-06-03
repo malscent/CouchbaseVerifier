@@ -1,5 +1,0 @@
-/Users/justinashworth/Projects/CouchbaseVerifier/obj/Debug/net6.0/CouchbaseVerifier.csproj.AssemblyReference.cache
-/Users/justinashworth/Projects/CouchbaseVerifier/obj/Debug/net6.0/CouchbaseVerifier.GeneratedMSBuildEditorConfig.editorconfig
-/Users/justinashworth/Projects/CouchbaseVerifier/obj/Debug/net6.0/CouchbaseVerifier.AssemblyInfoInputs.cache
-/Users/justinashworth/Projects/CouchbaseVerifier/obj/Debug/net6.0/CouchbaseVerifier.AssemblyInfo.cs
-/Users/justinashworth/Projects/CouchbaseVerifier/obj/Debug/net6.0/CouchbaseVerifier.csproj.CoreCompileInputs.cache
