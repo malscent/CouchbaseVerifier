@@ -8,15 +8,17 @@ namespace CouchbaseVerifierCLI.Services
 {
     public class VerifierCLI
     {
-        private IEnumerable<ITestValidator> _validators;
+        private readonly IEnumerable<ITestValidator> _validators;
+        private readonly ICouchbaseCacheManager _cacheManager;
 
-        public VerifierCLI(IEnumerable<ITestValidator> validators)
+        public VerifierCLI(IEnumerable<ITestValidator> validators, ICouchbaseCacheManager manager)
         {
             _validators = validators;
+            _cacheManager = manager;
         }
 
         [Command("verify", Description = "Performs test verifications against a couchbase server node")]
-        public void Verify(
+        public async Task<int> Verify(
             [Option("host", Description = "Couchbase Host to attempt connections to")]
             string host,
             [Option('u', "username", Description = "Username to use to connect to Couchbase Server Node")]
@@ -31,24 +33,78 @@ namespace CouchbaseVerifierCLI.Services
             int retries = 5
         )
         {
-            Console.WriteLine("Using Settings:");
-            Console.WriteLine($"Host: {host}");
-            Console.WriteLine($"Username: {username}");
-            Console.WriteLine($"Password: {password}");
-            Console.WriteLine($"TestDefinitionsPath: {testDefinitions}");
-            Console.WriteLine($"Timeout is: {timeoutInSeconds}");
-            Console.WriteLine($"Retries is: {retries}");
+            try {
+                Console.WriteLine("Using Settings:");
+                Console.WriteLine($"Host: {host}");
+                Console.WriteLine($"Username: {username}");
+                Console.WriteLine($"Password: {string.Empty.PadLeft(password.Length, '*')}");
+                Console.WriteLine($"TestDefinitionsPath: {testDefinitions}");
+                Console.WriteLine($"Timeout is: {timeoutInSeconds}");
+                Console.WriteLine($"Retries is: {retries}");
+                Console.WriteLine(SPLITTER);
+                Console.WriteLine($"Begin Time: {DateTime.UtcNow}");
+                Console.Write("Establishing Couchbase Cache...");
+
+                var complete = await _cacheManager.SetCache(host, username, password, retries, timeoutInSeconds);
+                if (!complete) {
+                    Console.Write("Failed!\n");
+                    Console.WriteLine("Unable to establish connection to Couchbase node.");
+                    return 1;
+                }
+                Console.Write("Success!\n");
+                Console.WriteLine(SPLITTER);
+                Console.WriteLine("Beginning tests...");
+                var config = TestConfiguration.ReadDefinitions(testDefinitions);
+                var fails = config.TestDefinitions.Count;
+                foreach (var def in config.TestDefinitions) {
+                    var test = _validators.Where(t => string.Equals(def.Name, t.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                    if (test == null) {
+                        throw new InvalidConfigurationException($"No test by the name of {def.Name} exists. See CouchbaseVerifier list for a full list of test names.");
+                    }
+                    var result = test.PerformValidation(_cacheManager.GetCache(), def);
+                    printResult(result, test, def);
+                    fails -= Convert.ToInt32(result.Success);       
+                }
+                Console.WriteLine($"{config.TestDefinitions.Count - fails}/{config.TestDefinitions.Count} successful tests.");
+                Console.WriteLine(SPLITTER);
+                Console.WriteLine($"EndTime:  {DateTime.UtcNow}");
+                return fails;
+            } catch (Exception e) {
+                Console.WriteLine($"EndTime: {DateTime.UtcNow}");
+                Console.WriteLine($"Error: {e.Message}");
+                return 1;
+            }
+
         }
 
+        private void printResult(TestResult result, ITestValidator test, TestDefinition def)
+        {
+            if (result.Success) {
+                var existing = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.Write(CHECKMARK);
+                Console.ForegroundColor = existing;
+                Console.Write($" {test.Name} - Expected: {def.ExpectedResult} - Actual: {result.Actual}\n");
+            } else {
+                var existing = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write("x");
+                Console.ForegroundColor = existing;
+                Console.Write($" {test.Name} - Expected: {def.ExpectedResult} - Actual: {result.Actual}\n");
+            }
+        }
+
+        private const string CHECKMARK = "\u2713";
+        private const string SPLITTER = "---------------------------------------------------------------";
         [Command("list", Description = "Lists all tests that will be executed")]
         public void ListTests()
         {
-            Console.WriteLine("---------------------------------------------------------------");
+            Console.WriteLine(SPLITTER);
             Console.WriteLine(String.Format("|{0,-30}|{1,-30}|", "Name", "Expected Value Type"));
-            Console.WriteLine("---------------------------------------------------------------");
+            Console.WriteLine(SPLITTER);
             foreach (var t in _validators) {
                 Console.WriteLine(String.Format("|{0,-30}|{1,-30}|", t.Name, t.ExpectedValueType));
-                Console.WriteLine("---------------------------------------------------------------");
+                Console.WriteLine(SPLITTER);
             }
         }
 

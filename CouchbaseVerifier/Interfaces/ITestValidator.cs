@@ -10,6 +10,6 @@ namespace CouchbaseVerifier.Interfaces
 
          public TestDefinition GetDefaultTestDefinition();
 
-         public bool PerformValidation(ICouchbaseCache cache, TestDefinition definition);
+         public TestResult PerformValidation(ICouchbaseCache cache, TestDefinition definition);
     }
 }

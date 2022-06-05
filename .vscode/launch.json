@@ -11,7 +11,7 @@
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
             "program": "${workspaceFolder}/CouchbaseVerifier/bin/Debug/net6.0/CouchbaseVerifier.dll",
-            "args": [],
+            "args": ["verify", "--host", "http://ec2-54-212-109-239.us-west-2.compute.amazonaws.com:8091", "-u", "couchbase", "-p", "Foo123!", "-d", "./build/example.json", "-t", "30", "-r", "5"],
             "cwd": "${workspaceFolder}/CouchbaseVerifier",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console
             "console": "internalConsole",

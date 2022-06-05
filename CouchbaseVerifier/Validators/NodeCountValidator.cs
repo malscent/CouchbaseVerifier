@@ -22,17 +22,21 @@ namespace CouchbaseVerifier.Validators
             };
         }
 
-        public bool PerformValidation(ICouchbaseCache cache, TestDefinition definition)
+        public TestResult PerformValidation(ICouchbaseCache cache, TestDefinition definition)
         {
+            int expected = definition.ValidateAndReturnInt();
+
             var nodeResponse = cache.GetNodeResponse();
             if (nodeResponse?.Nodes == null) {
-                return false;
+                return new TestResult {
+                    Success = false,
+                    Actual = "null"
+                };
             }
-            int expected;
-            if (!int.TryParse(definition.ExpectedResult, out expected)) {
-                throw new ArgumentException($"{definition.ExpectedResult} cannot be parsed as a integer type.");
-            }
-            return nodeResponse.Nodes.Count() == expected;
+            return new TestResult{
+                Success = nodeResponse.Nodes.Count() == expected,
+                Actual = nodeResponse.Nodes.Count().ToString()
+            };
         }
     }
 }

@@ -1,7 +1,7 @@
 // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
 using Newtonsoft.Json;
 
-namespace CouchbaseVerifierCLI.Models
+namespace CouchbaseVerifier.Models
 {
     public class AddNode
     {

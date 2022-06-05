@@ -16,7 +16,7 @@ namespace CouchbaseVerifierCLI
             return new AppRunner<VerifierCLI>().UseMicrosoftDependencyInjection(
                     Host.CreateDefaultBuilder()
                         .ConfigureServices((_, services) => 
-                            services.AddScoped<ICouchbaseCache, CouchbaseCache>()
+                            services.AddScoped<ICouchbaseCacheManager, CouchbaseCache>()
                                     .AddScoped<ITestValidator, ClusteredTestValidator>()
                                     .AddScoped<ITestValidator, NodeCountValidator>()
                                     .AddScoped<ITestValidator, DataNodeValidator>()
@@ -26,7 +26,9 @@ namespace CouchbaseVerifierCLI
                                     .AddScoped<ITestValidator, BackupNodeValidator>()
                                     .AddScoped<ITestValidator, AnalyticsNodeValidator>()
                                     .AddScoped<ITestValidator, EventingNodeValidator>()
-                                    .AddSingleton<VerifierCLI>())
+                                    .AddScoped<ITestValidator, MemoryValidator>()
+                                    .AddScoped<ITestValidator, StorageValidator>()
+                                    .AddScoped<VerifierCLI>())
                         .Build().Services)
             .Run(args);
         }

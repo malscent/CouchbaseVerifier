@@ -1,4 +1,4 @@
-using CouchbaseVerifierCLI.Models;
+using CouchbaseVerifier.Models;
 
 namespace CouchbaseVerifier.Interfaces
 {
@@ -6,5 +6,11 @@ namespace CouchbaseVerifier.Interfaces
     {
          public NodeResponse GetNodeResponse();
          public PoolsResponse GetPoolsResponse();
+    }
+
+    public interface ICouchbaseCacheManager
+    {
+        public Task<bool> SetCache(string host, string username, string password, int retries, int timeout);
+        public ICouchbaseCache GetCache();
     }
 }

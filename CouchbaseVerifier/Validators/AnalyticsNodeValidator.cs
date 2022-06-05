@@ -19,15 +19,15 @@ namespace CouchbaseVerifier.Validators
             };
         }
 
-        public bool PerformValidation(ICouchbaseCache cache, TestDefinition definition)
+        public TestResult PerformValidation(ICouchbaseCache cache, TestDefinition definition)
         {
+            int expected = definition.ValidateAndReturnInt();
             var nodeResponse = cache.GetNodeResponse();
             if (nodeResponse?.Nodes == null) {
-                return false;
-            }
-            int expected;
-            if (!int.TryParse(definition.ExpectedResult, out expected)) {
-                throw new ArgumentException($"{definition.ExpectedResult} cannot be parsed as a integer type.");
+                return new TestResult {
+                    Success = false,
+                    Actual = "null"
+                };
             }
             var count = 0;
             foreach (var node in nodeResponse.Nodes) {
@@ -35,7 +35,10 @@ namespace CouchbaseVerifier.Validators
                 if (containsKv)
                     count++;
             }
-            return count == expected;
+            return new TestResult {
+                Success = count == expected,
+                Actual = count.ToString()
+            };
         }
     }
 }

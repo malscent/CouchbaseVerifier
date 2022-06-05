@@ -19,11 +19,16 @@ namespace CouchbaseVerifier.Validators
             };
         }
 
-        public bool PerformValidation(ICouchbaseCache cache, TestDefinition definition)
+        public TestResult PerformValidation(ICouchbaseCache cache, TestDefinition definition)
         {
+            bool expected = definition.ValidateAndReturnBool();
+
             var nodeResponse = cache.GetNodeResponse();
             if (nodeResponse?.Nodes == null) {
-                return false;
+                return new TestResult {
+                    Success = false,
+                    Actual = "null"
+                };
             }
             var clusterMember = false;
             foreach (var n in nodeResponse.Nodes) {
@@ -32,11 +37,10 @@ namespace CouchbaseVerifier.Validators
                     break;
                 }
             }
-            bool expected;
-            if (!bool.TryParse(definition.ExpectedResult, out expected)) {
-                throw new ArgumentException($"{definition.ExpectedResult} cannot be parsed as a boolean type.");
-            }
-            return clusterMember == expected;
+            return new TestResult {
+                Success = clusterMember == expected,
+                Actual = clusterMember.ToString()
+            };
         }
     }
 }

@@ -4,7 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>CouchbaseVerifier</ToolCommandName>
+    <PackageOutputPath>../build/</PackageOutputPath>
+    <Version>1.0.0</Version>
     <Nullable>enable</Nullable>
+    <PackageLicense>https://github.com/malscent/CouchbaseVerifier/blob/master/LICENSE</PackageLicense>
   </PropertyGroup>
 
   <ItemGroup>

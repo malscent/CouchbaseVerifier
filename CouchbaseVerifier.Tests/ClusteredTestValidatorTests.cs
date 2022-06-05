@@ -1,7 +1,6 @@
 using CouchbaseVerifier.Interfaces;
 using CouchbaseVerifier.Models;
 using CouchbaseVerifier.Validators;
-using CouchbaseVerifierCLI.Models;
 using Moq;
 using Newtonsoft.Json;
 
@@ -21,7 +20,7 @@ public class ClusteredTestValidatorTests
         };
         var validator = new ClusteredTestValidator();
         var result = validator.PerformValidation(mockCache.Object, definition);
-        Assert.True(result);
+        Assert.True(result.Success);
     }
 
     [Fact]
@@ -36,7 +35,7 @@ public class ClusteredTestValidatorTests
         };
         var validator = new ClusteredTestValidator();
         var result = validator.PerformValidation(mockCache.Object, definition);
-        Assert.False(result);
+        Assert.False(result.Success);
     }
 
     [Fact]
@@ -51,7 +50,7 @@ public class ClusteredTestValidatorTests
         };
         var validator = new ClusteredTestValidator();
         var result = validator.PerformValidation(mockCache.Object, definition);
-        Assert.True(result);
+        Assert.True(result.Success);
     }
 
     [Fact]
@@ -66,6 +65,6 @@ public class ClusteredTestValidatorTests
         };
         var validator = new ClusteredTestValidator();
         var result = validator.PerformValidation(mockCache.Object, definition);
-        Assert.False(result);
+        Assert.False(result.Success);
     }
 }
