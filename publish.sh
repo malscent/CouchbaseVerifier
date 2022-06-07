@@ -1,7 +1,20 @@
 #!/bin/bash
 set -eu
 
+
 SCRIPT_SOURCE=${BASH_SOURCE[0]/%publish.sh/}
+
+if [[ -n "$TAGGED_VERSION" ]]; then
+    VERSION="$TAGGED_VERSION"
+else
+    echo "TAGGED_VERSION must be set"
+    exit 1
+fi
+
+if [[ -z "$NUGET_KEY" ]]; then
+    echo "Invalid/Missing Nuget Key"
+    exit 1
+fi
 
 xmlStarlet=$(which xml)
 if [[ -z "$xmlStarlet" ]]; then
@@ -17,11 +30,11 @@ export TOOL_PROJECT_NAME="CouchbaseVerifier.csproj"
 
 
 project=$(basename -s .csproj "$TOOL_PROJECT_NAME")
-version=$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$TOOL_DIR$TOOL_PROJECT_NAME")
-tool_file="${SCRIPT_SOURCE}build/$project.$version.nukpg"
+xml ed -L -u //PropertyGroup/Version -v "$VERSION" "${SCRIPT_SOURCE}CouchbaseVerifier/CouchbaseVerifier.csproj"
+tool_file="${SCRIPT_SOURCE}build/$project.$VERSION.nukpg"
 
 echo "Project: $project"
-echo "Testing $project version: $version"
+echo "Testing $project version: $VERSION"
 dotnet test "$TEST_PROJECT"
 
 dotnet pack "$TOOL_DIR$TOOL_PROJECT_NAME" -o "$BUILD_DIR" --configuration Release
