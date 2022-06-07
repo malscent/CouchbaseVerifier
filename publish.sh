@@ -1,8 +1,8 @@
 #!/bin/bash
 set -eu
 
+SCRIPT_SOURCE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-SCRIPT_SOURCE=${BASH_SOURCE[0]/%publish.sh/}
 
 if [[ -n "$TAGGED_VERSION" ]]; then
     VERSION="$TAGGED_VERSION"
@@ -22,20 +22,22 @@ if [[ -z "$xmlStarlet" ]]; then
     exit 1
 fi
 
-export TEST_PROJECT="${SCRIPT_SOURCE}CouchbaseVerifier.Tests/CouchbaseVerifier.Tests.csproj"
+export TEST_PROJECT="${SCRIPT_SOURCE}/CouchbaseVerifier.Tests/CouchbaseVerifier.Tests.csproj"
 export NUGET_SERVER="https://api.nuget.org/v3/index.json"
-export BUILD_DIR="${SCRIPT_SOURCE}build"
-export TOOL_DIR="${SCRIPT_SOURCE}CouchbaseVerifier/"
+export BUILD_DIR="${SCRIPT_SOURCE}/build"
+export TOOL_DIR="${SCRIPT_SOURCE}/CouchbaseVerifier/"
 export TOOL_PROJECT_NAME="CouchbaseVerifier.csproj"
 
 
 project=$(basename -s .csproj "$TOOL_PROJECT_NAME")
-xml ed -L -u //PropertyGroup/Version -v "$VERSION" "${SCRIPT_SOURCE}CouchbaseVerifier/CouchbaseVerifier.csproj"
-tool_file="${SCRIPT_SOURCE}build/$project.$VERSION.nukpg"
+xml ed -L -u //PropertyGroup/Version -v "$VERSION" "${SCRIPT_SOURCE}/CouchbaseVerifier/CouchbaseVerifier.csproj"
+tool_file="${SCRIPT_SOURCE}/build/$project.$VERSION.nupkg"
 
 echo "Project: $project"
 echo "Testing $project version: $VERSION"
 dotnet test "$TEST_PROJECT"
 
+echo "$tool_file"
 dotnet pack "$TOOL_DIR$TOOL_PROJECT_NAME" -o "$BUILD_DIR" --configuration Release
-dotnet nuget push "$tool_file" -s "$NUGET_SERVER" -k "$NUGET_KEY" -t 60 -n --force-english-output --skip-duplicate
+sleep 5
+dotnet nuget push "$tool_file" -s "$NUGET_SERVER" -k "$NUGET_KEY" -t 60 -n --force-english-output --skip-duplicate -d
