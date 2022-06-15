@@ -28,6 +28,7 @@ namespace CouchbaseVerifierCLI
                                     .AddScoped<ITestValidator, EventingNodeValidator>()
                                     .AddScoped<ITestValidator, MemoryValidator>()
                                     .AddScoped<ITestValidator, StorageValidator>()
+                                    .AddScoped<ITestValidator, VersionValidator>()
                                     .AddScoped<VerifierCLI>())
                         .Build().Services)
             .Run(args);

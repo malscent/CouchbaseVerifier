@@ -7,7 +7,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>CouchbaseVerifier</ToolCommandName>
     <PackageOutputPath>../build/</PackageOutputPath>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Nullable>enable</Nullable>
     <PackageLicense>https://github.com/malscent/CouchbaseVerifier/blob/master/LICENSE</PackageLicense>
     <RepositoryUrl>https://github.com/malscent/CouchbaseVerifier</RepositoryUrl>
