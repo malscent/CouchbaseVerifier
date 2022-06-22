@@ -1,4 +1,5 @@
 // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+using System.Numerics;
 using Newtonsoft.Json;
 
 namespace CouchbaseVerifier.Models
@@ -495,7 +496,7 @@ namespace CouchbaseVerifier.Models
         public Int64 CpuCoresAvailable { get; set; }
 
         [JsonProperty("allocstall")]
-        public Int64 Allocstall { get; set; }
+        public BigInteger Allocstall { get; set; }
     }
 
     public class Tasks
