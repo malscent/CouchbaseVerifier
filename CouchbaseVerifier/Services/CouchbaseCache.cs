@@ -42,7 +42,8 @@ namespace CouchbaseVerifier.Services
                         _lastCacheSet = DateTime.UtcNow;
                         return true;
                     }
-                } catch (Exception e) when (e is TaskCanceledException || e is HttpRequestException) {
+                } catch (Exception e) {
+                    Console.WriteLine($"Error attempting to establish cache: {e.Message}");
                     continue;
                 }
             }
